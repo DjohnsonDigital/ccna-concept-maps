@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAP 19 – Wireless LAN Controller</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f0e8;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #fffdf5;
+    border: 2px solid #c8b89a;
+    border-radius: 4px;
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Spiral binding holes */
+  .spine {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 44px;
+    background: #e8e0d0;
+    border-right: 2px solid #c8b89a;
+    z-index: 10;
+  }
+  .spine-hole {
+    width: 22px; height: 22px;
+    background: #f5f0e8;
+    border: 2px solid #b0a090;
+    border-radius: 50%;
+    margin: 28px auto 0;
+  }
+  .content {
+    margin-left: 44px;
+    padding: 20px 24px;
+  }
+  /* Title bar */
+  .map-title {
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 1.5em;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 12px 18px;
+    margin-bottom: 14px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+  }
+  .map-num {
+    background: #e94560;
+    color: #fff;
+    font-size: 0.75em;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 2px;
+  }
+  /* Core idea sticky */
+  .core-idea {
+    position: absolute;
+    right: 16px; top: 8px;
+    background: #ffd54f;
+    color: #333;
+    font-size: 0.72em;
+    font-weight: 600;
+    padding: 10px 14px;
+    max-width: 220px;
+    border-radius: 3px;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+    line-height: 1.4;
+    transform: rotate(1deg);
+  }
+  .core-idea strong { display: block; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; color: #b7641a; }
+  /* 4 columns */
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .col {
+    border: 2px solid #4caf50;
+    border-radius: 4px;
+    padding: 10px;
+    background: #f9fff9;
+  }
+  .col-header {
+    font-weight: 700;
+    font-size: 0.82em;
+    color: #2e7d32;
+    text-transform: uppercase;
+    border-bottom: 1px solid #a5d6a7;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+  }
+  .col ul { list-style: none; padding: 0; }
+  .col li { font-size: 0.78em; padding: 2px 0 2px 10px; border-left: 3px solid #81c784; margin-bottom: 3px; line-height: 1.4; }
+  /* FLOW section */
+  .section-label {
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .flow-box {
+    background: #1565c0;
+    color: #fff;
+    font-size: 0.75em;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .flow-arrow {
+    color: #1565c0;
+    font-size: 1.2em;
+    font-weight: 700;
+  }
+  /* TERMINAL section */
+  .terminal {
+    background: #0d1117;
+    color: #58d68d;
+    font-family: 'Courier New', monospace;
+    font-size: 0.76em;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    border: 1px solid #30363d;
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  /* CHECKLIST section */
+  .checklist {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 4px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .checklist label {
+    font-size: 0.78em;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .checklist input { margin-top: 2px; flex-shrink: 0; }
+  /* Back link */
+  .back { margin-top: 14px; font-size: 0.78em; }
+  .back a { color: #1565c0; text-decoration: none; }
+  .back a:hover { text-decoration: underline; }
+  @media(max-width: 700px) {
+    .cols { grid-template-columns: repeat(2, 1fr); }
+    .core-idea { position: static; transform: none; margin-bottom: 10px; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="spine">
+    <div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div><div class="spine-hole"></div>
+  </div>
+  <div class="content">
+    <div class="map-title">
+      <span class="map-num">MAP 19</span>
+      Wireless LAN Controller
+      <div class="core-idea"><strong>Core Idea</strong>WLC centralizes AP management. Lightweight APs (LWAP) tunnel traffic via CAPWAP.</div>
+    </div>
+    <div class="cols">
+        <div class="col">
+          <div class="col-header">1. WLC Architecture</div>
+          <ul><li>WLC = central controller</li><li>Lightweight APs (LWAP)</li><li>CAPWAP tunnel: control + data</li><li>Management via GUI/CLI/SNMP</li></ul>
+        </div>
+        <div class="col">
+          <div class="col-header">2. CAPWAP</div>
+          <ul><li>Control And Provisioning of WAPs</li><li>UDP 5246 (control)</li><li>UDP 5247 (data)</li><li>Replaces LWAPP (older)</li></ul>
+        </div>
+        <div class="col">
+          <div class="col-header">3. AP Discovery</div>
+          <ul><li>DHCP option 43 (WLC IP)</li><li>DNS: cisco-capwap-controller</li><li>Broadcast (same subnet)</li><li>Prior-join list in AP flash</li></ul>
+        </div>
+        <div class="col">
+          <div class="col-header">4. WLC Interfaces</div>
+          <ul><li>Management: device mgmt</li><li>AP-Manager: AP control</li><li>Virtual: DHCP relay/mobility</li><li>Dynamic: VLAN-mapped WLANs</li></ul>
+        </div></div>
+    <div class="section-label">⬛ Flow</div>
+    <div class="flow"><div class="flow-box">AP powers on</div><div class="flow-arrow">→</div> <div class="flow-box">Discovers WLC via CAPWAP</div><div class="flow-arrow">→</div> <div class="flow-box">Downloads config from WLC</div><div class="flow-arrow">→</div> <div class="flow-box">Creates SSIDs</div><div class="flow-arrow">→</div><div class="flow-box">Clients connect</div></div>
+    <div class="section-label">⬛ Terminal</div>
+    <div class="terminal">! WLC verification (CLI)
+show ap summary
+show ap config general
+show wlan summary
+show client detail <mac></div>
+    <div class="section-label">✅ Exam Checklist</div>
+    <div class="checklist"><label><input type="checkbox"> Lightweight AP needs WLC — cannot operate standalone</label><label><input type="checkbox"> CAPWAP uses UDP 5246 (control) and 5247 (data)</label><label><input type="checkbox"> Split-MAC: real-time frames handled by AP, management by WLC</label><label><input type="checkbox"> FlexConnect allows local switching if WLC link fails</label></div>
+    <div class="back"><a href="../index.html">← Back to All Maps</a></div>
+  </div>
+</div>
+</body>
+</html>
